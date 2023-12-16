@@ -1,0 +1,124 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            .center-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            margin: auto; 
+        }
+            body {
+                font-family: Roboto;
+                margin: 0;
+                padding: 0;
+            }
+    
+            header {
+                display: flex;
+                align-items: center;
+                padding: 10px; 
+                background-color: #f2f2f2;
+                justify-content:space-between;
+            }
+    
+            img {
+                height: 50px; 
+                margin-right: 10px; 
+            }
+    
+            span {
+                margin-right: 20px; 
+            }
+    
+            a {
+                font-size: 16px;
+                color: black;
+                text-decoration: none;
+            }
+            .login {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 6px;
+    background-color: #fff;
+    margin: 0 auto;
+    padding: 32px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 6px #ccc;
+            }
+            button{
+border-radius: 50px solid green;
+color:white;
+background:green;
+            }
+        </style>
+        <title>Kafane</title>
+    </head>
+    <body>
+
+        <header>
+            <img src="./final project image.png" alt="Kafane Logo">
+            <span>Kafane</span>
+            <span><a href="#orders"onclick="navigateToOrders()">Orders</a></span>
+            <span><a href="product.html">Products</a></span>
+            <span><a href="user.html">Users</a></span>
+            <div id="logout-container">
+            </div>
+        
+        </header>
+
+        <div class="center-box">
+
+<div class="login-container">
+<h2 style="text-align: left;">Sign In</h2>
+<form class="login">
+<label for="username" style="text-align: left;">Username:</label>
+<input type="text" id="username" placeholder="Enter your username" required>
+<label for="password" style="text-align: left;">Password:</label>
+<input type="password" id="password" placeholder="Enter your password" required>
+<button type="button" style="background-color: green; border-radius: 50px;" onclick="checkCredentials()">Login</button>
+</form>
+</div>
+
+
+<script>
+    function checkCredentials() {
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+
+        if (username === "qaifi" && password === "qaifi") {
+        alert("Login Successful");
+        // Redirect to the dashboard or another page
+        window.location.href = "options.html";
+    } else {
+        alert("Please enter valid credentials!");
+    }
+}
+    function navigateToOrders() {
+    window.location.href = "options.html";
+}
+    window.onload = function () {
+            var loggedIn = localStorage.getIt("loggedIn");
+            if (loggedIn === "true") {
+                alert("Welcome back!");
+            }
+        };
+        
+    
+       
+    </script>
+</body>
+</html>

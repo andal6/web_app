@@ -1,0 +1,209 @@
+<!-- orders.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family:Roboto;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f2f2f2;
+            justify-content: space-between;
+        }
+
+        img {
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        span {
+            margin-right: 20px;
+        }
+
+        a {
+            font-size: 16px;
+            color: black;
+            text-decoration: none;
+        }
+
+        #filterOptions {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin: 10px;
+        }
+
+        label {
+            margin-right: 10px;
+        }
+
+        #ordersTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #ordersTable th,
+        #ordersTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #ordersList {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin: 10px;
+        }
+
+        #ordersList div {
+            margin-bottom: 10px;
+        }
+    </style>
+    <title>Orders</title>
+</head>
+
+<body>
+    <header>
+        <img src="./final project image.png" alt="Kafane Logo">
+        <span>Kafane</span>
+        
+        <span><a href="options.html">Orders</a></span>
+        <span><a href="product.html">Products</a></span>
+        <span><a href="user.html">Users</a></span>
+        <div id="logout-container">
+        <button onclick="logout()">Logout</button>
+    </div>
+    </header>
+
+    <div id="filterOptions">
+        <h2>Orders</h2>
+        <div>
+            <label>
+                <input type="checkbox" id="newCheckbox" onclick="filterOrders()"> New
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="checkbox" id="packedCheckbox" onclick="filterOrders()"> Packed
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="checkbox" id="inTransitCheckbox" onclick="filterOrders()"> InTransit
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="checkbox" id="deliveredCheckbox" onclick="filterOrders()"> Delivered
+            </label>
+        </div>
+        <p>Count: <span id="orderCount">0</span></p>
+    </div>
+
+    <div id="ordersList">
+        <table id="ordersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function logout() {
+        alert("Logged out successfully");
+        window.location.href = "final_proj.html";
+    }
+        function fetchOrders() {
+            var Url = "https://5fc1a1c9cb4d020016fe6b07.mockapi.io/api/v1/orders";
+
+            fetch(Url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched Orders:", data); 
+                renderFilteredOrdersInTable(data);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        function renderFilteredOrdersInTable(orders) {
+            var ordersTableBody = document.getElementById("ordersTableBody");
+            ordersTableBody.innerHTML = ""; 
+
+            orders.forEach(function (order) {
+                var tr = document.createElement("tr");
+                tr.innerHTML = "<td>" + order.id + "</td>" +
+                    "<td>" + order.customerName + "</td>" +
+                    "<td>" + order.orderDate + "</td>" +
+                    "<td>" + order.amount + "</td>" +
+                    "<td>" + (order.orderStatus ? order.orderStatus : "N/A") + "</td>";
+
+                ordersTableBody.appendChild(tr);
+            });
+            updateOrderCount(orders.length);
+        }
+
+        function filterOrders() {
+            var newCheckbox = document.getElementById("newCheckbox").checked;
+            var packedCheckbox = document.getElementById("packedCheckbox").checked;
+            var inTransitCheckbox = document.getElementById("inTransitCheckbox").checked;
+            var deliveredCheckbox = document.getElementById("deliveredCheckbox").checked;
+
+            var Url = "https://5fc1a1c9cb4d020016fe6b07.mockapi.io/api/v1/orders";
+            var queryParams = [];
+            if (newCheckbox) queryParams.push("orderStatus=New");
+            if (packedCheckbox) queryParams.push("orderStatus=Packed");
+            if (inTransitCheckbox) queryParams.push("orderStatus=InTransit");
+            if (deliveredCheckbox) queryParams.push("orderStatus=Delivered");
+
+            if (queryParams.length > 0) {
+                Url += "?" + queryParams.join("&");
+            }
+
+            fetch(Url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                renderFilteredOrdersInTable(data);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updateOrderCount(count) {
+            document.getElementById("orderCount").innerText = count;
+        }
+        window.onload = function () {
+            fetchOrders();
+        };
+        function logout() {
+        window.location.href = "final_proj.html"; 
+    }
+    </script>
+</body>
+
+</html>

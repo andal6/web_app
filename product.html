@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Roboto;
+            margin: 0;
+            padding: 0;
+        }
+        button{
+            border:none;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f2f2f2;
+            justify-content: space-between;
+            color:black;
+            text-decoration:none;
+        }
+        a {
+            font-size: 16px;
+            color: black;
+            text-decoration: none;
+        }
+
+        img {
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        span {
+            margin-right: 20px;
+        }
+
+        a {
+            font-size: 16px;
+            color: black;
+            text-decoration: none;
+        }
+
+        .filters {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin: 10px;
+        }
+
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .product-table th,
+        .product-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        label {
+            margin-right: 10px;
+        }
+    </style>
+    <title>Product Listing</title>
+</head>
+
+<body>
+
+    <header>
+        <img src="./final project image.png" alt="Kafane Logo">
+        <span>Kafane</span>
+       
+        <span><a href="options.html">options</option></a></span>
+        <span><a href="product.html">Products</a></span>
+        <span><a href="user.html">Users</a></span>
+        <div id="logout-container">
+            <button onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="filters">
+        <h2>Filters</h2>
+        <label>
+            <input type="checkbox" id="expiredFilter"> Expired
+        </label>
+        <label>
+            <input type="checkbox" id="lowStockFilter"> Low Stock
+        </label>
+        <p>Count: <span id="productCount">0</span></p>
+    </div>
+
+    <div class="product-list" id="productList"></div>
+
+<script>
+     function logout() {
+        alert("Logged out successfully");
+        window.location.href = "final_proj.html";
+    }
+    window.onload = function () {
+        fetchProducts();
+    };
+
+    async function fetchProducts() {
+        try {
+            const response = await fetch("https://5fc1a1c9cb4d020016fe6b07.mockapi.io/api/v1/products");
+            const products = await response.json();
+            displayProducts(products);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    }
+
+    function displayProducts(products) {
+        const productList = document.getElementById("productList");
+        const productCountElement = document.getElementById("productCount");
+        const expiredFilter = document.getElementById("expiredFilter");
+        const lowStockFilter = document.getElementById("lowStockFilter");
+
+        let filteredProducts = products;
+
+        expiredFilter.addEventListener("change", function () {
+            filteredProducts = applyFilters(products);
+            displayProductsInTable(filteredProducts);
+        });
+
+        lowStockFilter.addEventListener("change", function () {
+            filteredProducts = applyFilters(products);
+            displayProductsInTable(filteredProducts);
+        });
+
+        displayProductsInTable(filteredProducts);
+        productCountElement.innerText = filteredProducts.length;
+    }
+
+    function applyFilters(products) {
+        const expiredFilter = document.getElementById("expiredFilter");
+        const lowStockFilter = document.getElementById("lowStockFilter");
+
+        let filteredProducts = [...products];
+
+        if (expiredFilter.checked) {
+            filteredProducts = filteredProducts.filter(product => isExpired(product.expiryDate));
+        }
+
+        if (lowStockFilter.checked) {
+            filteredProducts = filteredProducts.filter(product => isLowStock(product.stock));
+        }
+
+        return filteredProducts;
+    }
+
+    function isExpired(expiryDate) {
+        const currentDate = new Date();
+        const expiry = new Date(expiryDate);
+        return expiry < currentDate;
+    }
+
+    function isLowStock(stock) {
+        return stock < 100;
+    }
+
+    function displayProductsInTable(products) {
+        const productList = document.getElementById("productList");
+        const productCountElement = document.getElementById("productCount");
+        while (productList.firstChild) {
+            productList.removeChild(productList.firstChild);
+        }
+
+        const productTable = document.createElement("table");
+        productTable.classList.add("product-table");
+
+        const tableHeader = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+        const headers = ["ID", "Product Name", "Product Brand", "Expiry Date", "Unit Price", "Stock"];
+
+        headers.forEach(headerText => {
+            const th = document.createElement("th");
+            th.textContent = headerText;
+            headerRow.appendChild(th);
+        });
+
+        tableHeader.appendChild(headerRow);
+        productTable.appendChild(tableHeader);
+
+        const tableBody = document.createElement("tbody");
+
+        products.forEach(product => {
+            const tr = document.createElement("tr");
+            const tdID = document.createElement("td");
+            const tdName = document.createElement("td");
+            const tdBrand = document.createElement("td");
+            const tdExpiry = document.createElement("td");
+            const tdPrice = document.createElement("td");
+            const tdStock = document.createElement("td");
+
+            tdID.textContent = product.id || "";
+            tdName.textContent = product.medicineName || "";
+            tdBrand.textContent = product.medicineBrand || "";
+            tdExpiry.textContent = product.expiryDate || "";
+            tdPrice.textContent = `$${product.unitPrice || ""}`;
+            tdStock.textContent = product.stock || "";
+
+            tr.appendChild(tdID);
+            tr.appendChild(tdName);
+            tr.appendChild(tdBrand);
+            tr.appendChild(tdExpiry);
+            tr.appendChild(tdPrice);
+            tr.appendChild(tdStock);
+
+            tableBody.appendChild(tr);
+        });
+
+        productTable.appendChild(tableBody);
+        productList.appendChild(productTable);
+
+        productCountElement.innerText = products.length;
+    }
+    function logout() {
+        window.location.href = "final_proj.html"; 
+    }
+</script>
+
+</body>
+
+</html>
